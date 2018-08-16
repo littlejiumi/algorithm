@@ -1,0 +1,9 @@
+void BFS(int s){
+	queue<int> q;
+	q.push(s);
+	while(!q.empty()) {
+		int top = q.front();
+		q.pop();
+		将top的下一层结点中未入队的全部入队，并标记为全部入队； 
+	}
+}
