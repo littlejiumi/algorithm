@@ -1,0 +1,71 @@
+//只用Dijkstra算法
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int MAXV = 510;
+const int INF = 1000000000;
+
+int n, m, st, ed, G[MAXV][MAXV], cost[MAXV][MAXV];//顶点数，边数，起点，终点，距离矩阵，花费矩阵 
+int d[MAXV], c[MAXV], pre[MAXV]; //最短距离，最小花费，最短路径前驱结点 
+bool vis[MAXV] = {false};
+
+void Dijkstra(int s) {
+	fill(d, d + MAXV, INF);
+	fill(c, c + MAXV, INF);
+	for(int i = 0; i < n; i++){
+		pre[i] = i;
+	}
+	d[s] = 0;
+	c[s] = 0;        //注意以上都是对定义数组的初始化
+	for(int i = 0; i < n; i++) { //n个点都要访问一遍 
+		int u = -1, MIN = INF;  //u使d[u]最小，MIN存放该最小d[u] 
+		for(int j = 0; j < n; j++) {//找出未访问的顶点中d[]最小的 
+			if(vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		} 
+		if(u == -1)return;
+		vis[u] = true;
+		for(int v = 0; v< n; v++) {
+			if(vis[v] == false && G[u][v] != INF){    //u能到达v且v未被访问 
+				if(d[u] + G[u][v] < d[v]) {           //如果以u为中介点能使d[v]更优 
+					d[v] = d[u] + G[u][v];            //覆盖d[v]换成经过u的路径 
+					c[v] = c[u] + cost[u][v];           //覆盖c[v]因为路径变了
+					pre[v] = u;            			   //令v的前驱是u 
+				}else if(d[u] + G[u][v] == d[v]) {   //如果以u为中介点最短路径不变 
+					if(c[u] + cost[u][v] < c[v]) {      //如果经u后花费更小 
+						c[v] = c[u] +  cost[u][v];		//优化c[v]
+						pre[v] = u;  					//令v的前驱是u 
+					}
+				}
+			}
+		}
+	} 
+} 
+
+void DFS(int v)   {//打印路径
+	if(v == st) {
+		printf("%d ", v );
+		return;
+	} 
+	DFS(pre[v]);
+	printf("%d ",v);
+} 
+
+int main() {
+	scanf("%d%d%d%d", &n, &m, &st, &ed);
+	int u, v;
+	fill(G[0], G[0] + MAXV * MAXV, INF);
+	for(int i = 0; i < m; i++) {
+		scanf("%d%d", &u, &v);
+		scanf("%d%d", &G[u][v], &cost[u][v]);
+		G[v][u]= G[u][v];
+		cost[v][u]= cost[u][v];
+	}
+	Dijkstra(st);
+	DFS(ed);           		//打印路径 
+	printf("%d %d\n", d[ed], c[ed]); //最短距离，最短路径下的最小花费 
+	return 0 ;
+} 
