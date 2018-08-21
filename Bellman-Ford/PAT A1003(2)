@@ -1,0 +1,73 @@
+//使用Bellman-Ford算法
+#include<cstdio>
+#include<algorithm>
+#include<vector>
+#include<set>
+#include<cstring>
+using namespace std;
+const int MAXV = 510;
+const int INF = 1000000000;
+
+struct Node{
+	int v, dis;              //v为邻接边的目标顶点，dis为邻接边的边权 
+	Node(int _v, int _dis) :v(_v), dis(_dis){};		//构造函数 
+};
+vector<Node> Adj[MAXV];      //图G的邻接表，基本定义
+int n, m, st, ed, weight[MAXV];
+int d[MAXV], w[MAXV], num[MAXV];		//最短距离，最大点权和，最短路径条数 
+set<int> pre[MAXV]; 					//前驱
+
+void Bellman(int s) {
+	fill(d, d+MAXV, INF);
+	d[s] = 0;
+	memset(num, 0, sizeof(num));
+	num[s] = 1;
+	fill(w, w+MAXV, 0);
+	w[s]=weight[s];					//以上是对终点为起点s的初始化 
+	//以下为求解d的部分
+	for(int i = 0; i < n-1; i++) {		//执行n-1次操作 
+		for(int u = 0; u < n; u++) {	//每轮操作都遍历所有边
+			for(int j = 0; j < Adj[u].size(); j++) {
+				int v = Adj[u][j].v;   	//邻接边的顶点
+				int dis = Adj[u][j].dis;	//邻接边的边权 
+				if(d[u] + dis < d[v]) {		//以u为中介点能令d[u]变小 
+					d[v] = d[u] +dis;	//覆盖d[v] 
+					w[v] = w[u] + weight[v]; 
+					num[v] = num[u];
+					pre[v].clear();
+					pre[v].insert(u);
+				}else if(d[u] + dis == d[v]){
+					if(w[u] + weight[v] > w[v]){
+						w[v] = w[u] + weight[v];
+					}
+					pre[v].insert(u);
+					num[v] = 0;
+					set<int>::iterator it;		//重新统计num[v],因为BF算法期间会多次访问曾经访问过的结点
+					for(it = pre[v].begin(); it != pre[v].end(); it++) {
+						num[v] += num[*it];
+					} 
+				}
+			} 
+			
+		}
+	} 
+} 
+
+int main() {
+	scanf("%d%d%d%d", &n, &m, &st, &ed);
+	for(int i =0; i < n; i++) {
+		scanf("%d", &weight[i]);
+	}
+	int u,v, wt;
+	for(int i = 0; i < m; i++) {
+		scanf("%d%d%d", &u, &v, &wt) ;
+		Adj[u].push_back(Node(v, wt));
+		Adj[v].push_back(Node(u, wt));  //邻接表的赋初值 
+	}
+	Bellman(st);  
+	printf("%d %d\n", num[ed], w[ed]);
+	return 0;
+}
+
+
+
