@@ -1,0 +1,63 @@
+//Emergency
+//只用Dijkstra算法，不常用
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int MAXV = 510;
+const int INF = 1000000000;
+
+int n, m, st, ed, G[MAXV][MAXV], weight[MAXV];//顶点数，边数，起点，终点，邻接矩阵，点权
+int d[MAXV], w[MAXV], num[MAXV]; //最短距离，最大点权和，最短路径条数
+bool vis[MAXV] = {false};
+
+void Dijkstra(int s) {
+	fill(d, d + MAXV, INF);
+	fill(num, num + MAXV, 0);
+	fill(w, w + MAXV, 0);
+	d[s] = 0;
+	w[s] = weight[s];
+	num[s] = 1;        //注意以上都是对定义数组的初始化
+	for(int i = 0; i < n; i++) { //n个点都要访问一遍 
+		int u = -1, MIN = INF;  //u使d[u]最小，MIN存放该最小d[u] 
+		for(int j = 0; j < n; j++) {//找出未访问的顶点中d[]最小的 
+			if(vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		} 
+		if(u == -1)return;
+		vis[u] = true;
+		for(int v = 0; v< n;v++) {
+			if(vis[v] == false && G[u][v] != INF){    //u能到达v且v未被访问 
+				if(d[u] + G[u][v] < d[v]) {           //如果以u为中介点能使d[v]更优 
+					d[v] = d[u] + G[u][v];            //覆盖d[v]换成经过u的路径 
+					w[v] = w[u] +weight[v];           //覆盖w[v]因为路径变了
+					num[v] = num[u];                 //路径个数变成num[u]了，因为临接点是u 
+				}else if(d[u] + G[u][v] == d[v]) {   //如果以u为中介点最短路径不变 
+					if(w[u] + weight[v] > w[v]) {    //如果经u后点权更大 
+						w[v] = w[u] + weight[v];	 //w[v]继承w[u] 
+					}
+					num[v] += num[u];				//只要有最短路径相同，数量就增加，写在外面 
+				}
+			}
+		}
+	} 
+} 
+
+int main() {
+	scanf("%d%d%d%d", &n, &m, &st, &ed);
+	for(int i = 0; i < n; i++) {
+		scanf("%d",&weight[i]);
+	}
+	int u, v;
+	fill(G[0], G[0] + MAXV * MAXV, INF);
+	for(int i = 0; i < m; i++) {
+		scanf("%d%d", &u, &v);
+		scanf("%d", &G[u][v]);
+		G[v][u]= G[u][v];
+	}
+	Dijkstra(st);
+	printf("%d %d\n", num[ed], w[ed]);
+	return 0 ;
+} 
