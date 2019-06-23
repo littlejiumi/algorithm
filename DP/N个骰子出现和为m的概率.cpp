@@ -15,4 +15,28 @@
 3.有1个骰子，f(1,1)=f(1,2)=f(1,3)=f(1,4)=f(1,5)=f(1,6)=1。
 用递归就可以解决这个问题：
 */
-
+#include<iostream>
+using  namespace std;
+int getCount(int n, int sum){
+    if(n<1||sum<n||sum>6*n){
+        return 0;
+    }
+    if( n== 1){
+        return 1;
+    }
+    int c = 0;
+    c = getCount( n-1, sum -1) + getCount( n-1, sum -2) +
+            getCount(n-1, sum - 3) + getCount( n-1, sum -4) +
+            getCount(n-1, sum - 5) + getCount( n-1, sum -6) ;
+    return c;
+}
+int main(){
+    int n = 0;
+    while(true){
+        cin >> n;
+        for(int i = n ; i<6*n; i++){
+            cout << getCount(n , i)<<endl;
+        }
+    }
+    return 0;
+}
