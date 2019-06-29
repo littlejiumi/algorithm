@@ -36,5 +36,6 @@ int main(){
  
 dp[i][0]=0,dp[0][j]=0
 相应的状态转移方程为：
-dp[i][j]={max{dp[i−1][j],dp[i][j−1]},dp[i−1][j−1]+1,A[i−1]!=B[j−1]A[i−1]==B[j−1]
+dp[i][j]={max{dp[i−1][j],dp[i][j−1]}  A[i−1]!=B[j−1]；
+        =dp[i−1][j−1]+1               A[i−1]==B[j−1]
 */
