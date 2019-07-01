@@ -8,10 +8,10 @@ int main(){
     int la = a.length();
     int lb = b.length();
     int d[maxn][maxn] = {0};
-    for(int i = 0; i < la; i++){
+    for(int i = 0; i <= la; i++){
         d[i][0] = 0;
     }
-    for(int j = 0; j < lb; j++){
+    for(int j = 0; j <= lb; j++){
         d[0][j] = 0;
     }
     for(int i = 1; i <= la; i++){
